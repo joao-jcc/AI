@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "memory_resource": "cpp",
+        "__node_handle": "cpp"
+    }
+}

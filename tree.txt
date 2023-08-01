@@ -1,64 +1,53 @@
 .
-├── CPP
-│   ├── Makefile
-│   ├── dependencies
-│   │   ├── lib
-│   │   │   └── libraylib.a
-│   │   └── thirdy_party
-│   │       ├── AudioDevice.hpp
-│   │       ├── AudioStream.hpp
-│   │       ├── BoundingBox.hpp
-│   │       ├── CLI11.hpp
-│   │       ├── Camera2D.hpp
-│   │       ├── Camera3D.hpp
-│   │       ├── Color.hpp
-│   │       ├── Colors.hpp
-│   │       ├── Font.hpp
-│   │       ├── Functions.hpp
-│   │       ├── Gamepad.hpp
-│   │       ├── Image.hpp
-│   │       ├── Material.hpp
-│   │       ├── Matrix.hpp
-│   │       ├── Mesh.hpp
-│   │       ├── Model.hpp
-│   │       ├── ModelAnimation.hpp
-│   │       ├── Mouse.hpp
-│   │       ├── Music.hpp
-│   │       ├── Physics.hpp
-│   │       ├── Ray.hpp
-│   │       ├── RayCollision.hpp
-│   │       ├── RaylibException.hpp
-│   │       ├── Rectangle.hpp
-│   │       ├── RenderTexture.hpp
-│   │       ├── Shader.hpp
-│   │       ├── Sound.hpp
-│   │       ├── Text.hpp
-│   │       ├── Texture.hpp
-│   │       ├── Vector2.hpp
-│   │       ├── Vector3.hpp
-│   │       ├── Vector4.hpp
-│   │       ├── VrStereoConfig.hpp
-│   │       ├── Wave.hpp
-│   │       ├── Window.hpp
-│   │       ├── physac.hpp
-│   │       ├── raylib-cpp-utils.hpp
-│   │       ├── raylib-cpp.hpp
-│   │       ├── raylib.h
-│   │       ├── raylib.hpp
-│   │       ├── raymath.h
-│   │       └── raymath.hpp
-│   ├── executables
-│   │   └── maze
-│   └── programs
-│       ├── maze
-│       │   ├── build
-│       │   │   └── main.o
-│       │   ├── include
-│       │   │   └── utilities.hpp
-│       │   └── src
-│       │       └── main.cpp
-│       └── ttt
-├── Python
+├── cpp
+│   └── maze
+│       ├── Makefile
+│       ├── bin
+│       │   ├── maze
+│       │   └── test
+│       ├── build
+│       │   ├── main.o
+│       │   ├── maze.o
+│       │   └── utilities.o
+│       ├── dependencies
+│       │   ├── lib
+│       │   │   └── libraylib.a
+│       │   └── thirdy_party
+│       │       ├── Colors.hpp
+│       │       ├── doctest.hpp
+│       │       └── raylib.h
+│       ├── error_log.txt
+│       ├── include
+│       │   ├── maze.hpp
+│       │   └── utilities.hpp
+│       ├── src
+│       │   ├── main.cpp
+│       │   ├── maze.cpp
+│       │   └── utilities.cpp
+│       ├── test
+│       │   └── test.cpp
+│       └── text
+│           ├── maze1.txt
+│           ├── maze2.txt
+│           ├── maze3.txt
+│           └── maze4.txt
+├── images
+│   └── ttt.gif
+├── python
+│   ├── maze
+│   │   ├── maze.py
+│   │   ├── maze1.txt
+│   │   ├── maze2.txt
+│   │   ├── maze3.txt
+│   │   └── maze4.txt
+│   └── ttt
+│       ├── OpenSans-Regular.ttf
+│       ├── __pycache__
+│       │   └── tictactoe.cpython-39.pyc
+│       ├── requirements.txt
+│       ├── runner.py
+│       ├── tictactoe-test.py
+│       └── tictactoe.py
 └── tree.txt
 
-13 directories, 49 files
+17 directories, 34 files

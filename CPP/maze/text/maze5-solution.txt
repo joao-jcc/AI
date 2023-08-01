@@ -1,0 +1,6 @@
+Explored Nodes: 4
+Path Cost: 3
+ ##A#  
+###*###
+  #*###
+###B###

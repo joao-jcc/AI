@@ -1,3 +1,0 @@
-status 1: command line error
-status 2: read/write files error
-status 3: theres is no solution to be written
