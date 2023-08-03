@@ -17,7 +17,6 @@ typedef struct Node {
     Vector2 position;
     Vector2 action;
     Node* parent;
-
 } Node;
 
 // The path must be the same

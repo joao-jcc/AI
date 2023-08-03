@@ -1,4 +1,5 @@
 #include "maze.hpp"
+#include "maze-app.hpp"
 #include <iostream>
 
 int main(int argc, char* argv[]) {
@@ -7,19 +8,23 @@ int main(int argc, char* argv[]) {
         exit(1);
     }
 
-    // read
     std::string input_maze = argv[1];
-    Maze maze(input_maze);
+    MazeApp app(input_maze);
+    app.run();
 
-    // solve
-    maze.solve();
+    // // read
+    // std::string input_maze = argv[1];
+    // Maze maze(input_maze);
 
-    // write
-    size_t pos = input_maze.find_last_of(".");
-    std::string output_maze = input_maze.substr(0, pos) + "-solution.txt";
+    // // solve
+    // maze.solve();
+
+    // // write
+    // size_t pos = input_maze.find_last_of(".");
+    // std::string output_maze = input_maze.substr(0, pos) + "-solution.txt";
     
 
-    maze.write_solution(output_maze);
+    // maze.write_solution(output_maze);
 
     
 

@@ -6,7 +6,7 @@
 #include <string>
 
 class Maze {
-    private:
+    protected:
         // Maze shape and qualifiers
         std::vector<std::vector<bool>> _walls;
         Vector2 _start;
