@@ -9,12 +9,12 @@ class Maze {
     protected:
         // Maze shape and qualifiers
         std::vector<std::vector<bool>> _walls;
-        Vector2 _start;
-        Vector2 _goal;
-        Vector2 _dimension;
+        Vec2 _start;
+        Vec2 _goal;
+        Vec2 _dimension;
 
         // Solution: A + intermediate_states + B
-        std::vector<Vector2> _solution;
+        std::vector<Vec2> _solution;
         // Frontier
         Frontier* _frontier;
         // Explored Nodes: A + all other explored nodes + B
@@ -31,14 +31,14 @@ class Maze {
         void read_maze(std::string path);
         void write_solution(std::string path);
 
-        std::vector<Vector2> actions(Node* node);
-        Node* result(Node* node, Vector2 action);
+        std::vector<Vec2> actions(Node* node);
+        Node* result(Node* node, Vec2 action);
         void solve();
 
         bool explored(Node* node);
 
         // Getters
-        Vector2 get_vector2(char key);
+        Vec2 get_Vec2(char key);
         std::vector<std::vector<bool>> get_walls();
 };
 

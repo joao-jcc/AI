@@ -16,7 +16,7 @@ void Frontier::add(Node* node) {
 
 bool Frontier::contains_state(Node* target_node) {
     for (Node* node : _frontier) {
-        if (equal_node(node, target_node)) {return true;}
+        if (*node == *target_node) {return true;}
     }
     return false;
 }

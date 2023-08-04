@@ -18,7 +18,7 @@ maze: create_build_dir $(maze_objects)
 	$(CXX) $(maze_objects) -o $(maze_executable) $(LDFLAGS)
 
 test: create_build_dir $(maze_objects)
-	$(CXX) test/test.cpp src/maze.cpp src/frontier.cpp -o $(test_executable) $(LDFLAGS) $(CXXFLAGS)
+	$(CXX) test/test.cpp src/maze.cpp src/frontier.cpp src/utilities.cpp -o $(test_executable) $(LDFLAGS) $(CXXFLAGS)
 
 # Create build directory if it doesn't exist
 create_build_dir:

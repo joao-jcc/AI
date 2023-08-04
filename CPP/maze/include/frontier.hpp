@@ -16,6 +16,10 @@ class Frontier {
         bool empty();
         virtual Node* remove() = 0;
 
+        std::vector<Node*> get_frontier() {
+            return _frontier;
+        }
+
 };
 
 class StackFrontier : public Frontier {

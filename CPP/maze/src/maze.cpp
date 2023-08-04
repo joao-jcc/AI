@@ -4,7 +4,7 @@
 Maze::Maze(std::string path) {
     read_maze(path);
     _frontier = new QueueFrontier();
-    _solution = std::vector<Vector2>();
+    _solution = std::vector<Vec2>();
     _explored_nodes = std::vector<Node*>();
     _trash_nodes = std::vector<Node*>();
 }
@@ -50,10 +50,10 @@ void Maze::read_maze(std::string path) {
                 continue;
             } else if (line[c] == 'A') {
                 // 'A' character represents the starting position in the maze.
-                _start = Vector2{l, c};
+                _start = Vec2{l, c};
             } else if (line[c] == 'B') {
                 // 'B' character represents the goal position in the maze.
-                _goal = Vector2{l, c};
+                _goal = Vec2{l, c};
             }
             row.push_back(false); // Any other character represents an open path.
         }
@@ -61,7 +61,7 @@ void Maze::read_maze(std::string path) {
         ++l; // Increment the line counter.
     }
 
-    _dimension = Vector2{l, c};
+    _dimension = Vec2(l, c);
 
     file.close(); // Close the file after reading.
 }
@@ -85,31 +85,31 @@ void Maze::write_solution(std::string path) {
     file << "Path Cost: " << _solution.size() - 1 << std::endl;
 
     // Create a maze representation with characters to be written into the file.
-    std::vector< std::vector<char> > maze(_dimension.x, std::vector<char>(_dimension.y, ' '));
+    std::vector< std::vector<char> > maze(_dimension.get_x(), std::vector<char>(_dimension.get_y(), ' '));
 
     // Convert the maze data into characters for visualization.
-    for (int l = 0; l < _dimension.x; ++l) {
-        for (int c = 0; c < _dimension.y; ++c) {
+    for (int l = 0; l < _dimension.get_x(); ++l) {
+        for (int c = 0; c < _dimension.get_y(); ++c) {
             maze[l][c] = _walls[l][c] ? '#' : ' ';
         }
     }
 
     for (Node* node: _explored_nodes) {
-        maze[node->position.x][node->position.y] = '-';
+        maze[node->get_position().get_x()][node->get_position().get_y()] = '-';
     }
 
     // Mark the solution path in the maze representation.
-    for (Vector2 position : _solution) {
-        maze[position.x][position.y] = '*';
+    for (Vec2 position : _solution) {
+        maze[position.get_x()][position.get_y()] = '*';
     }
 
     // Mark the start and goal positions in the maze representation.
-    maze[_start.x][_start.y] = (char)'A';
-    maze[_goal.x][_goal.y] = (char)'B';
+    maze[_start.get_x()][_start.get_y()] = (char)'A';
+    maze[_goal.get_x()][_goal.get_y()] = (char)'B';
     
     // Write the maze representation into the file.
-    for (int l = 0; l < _dimension.x; ++l) {
-        for (int c = 0; c < _dimension.y; ++c) {
+    for (int l = 0; l < _dimension.get_x(); ++l) {
+        for (int c = 0; c < _dimension.get_y(); ++c) {
             file << maze[l][c];
         }
         file << std::endl; // Add a new line after each row.
@@ -119,33 +119,34 @@ void Maze::write_solution(std::string path) {
     file.close(); // Close the file after writing.
 }
 
-std::vector<Vector2> Maze::actions(Node* node) {
-    int l = node->position.x;
-    int c = node->position.y;
-    std::vector<Vector2> options;
+std::vector<Vec2> Maze::actions(Node* node) {
+    Vec2 position = node->get_position();
+    int l = position.get_x();
+    int c = position.get_y();
+    std::vector<Vec2> options;
 
     // Down
-    if (l < _dimension.x - 1 && !_walls[l + 1][c]) {
-        options.push_back(Vector2{1, 0});
+    if (l < _dimension.get_x() - 1 && !_walls[l + 1][c]) {
+        options.push_back(Vec2{1, 0});
     }
     // Up
     if (l > 0 && !_walls[l - 1][c]) {
-        options.push_back(Vector2{-1, 0});
+        options.push_back(Vec2{-1, 0});
     }
     // Right
-    if (c < _dimension.y - 1 && !_walls[l][c + 1]) {
-        options.push_back(Vector2{0, 1});
+    if (c < _dimension.get_y() - 1 && !_walls[l][c + 1]) {
+        options.push_back(Vec2{0, 1});
     }
     // Left
     if (c > 0 && !_walls[l][c - 1]) {
-        options.push_back(Vector2{0, -1});
+        options.push_back(Vec2{0, -1});
     }
 
     return options;
 }
 
-Node* Maze::result(Node* node, Vector2 action) {
-    Vector2 new_position = Vector2{node->position.x + action.x, node->position.y + action.y};
+Node* Maze::result(Node* node, Vec2 action) {
+    Vec2 new_position = Vec2{node->get_position().get_x() + action.get_x(), node->get_position().get_y() + action.get_y()};
     Node* new_node = new Node{new_position, action, node};
 
     return new_node;
@@ -153,7 +154,7 @@ Node* Maze::result(Node* node, Vector2 action) {
 
 bool Maze::explored(Node* target_node) {
     for (Node* node : _explored_nodes) {
-        if(equal_node(target_node, node)) {
+        if(*target_node == *node) {
             return true;
         }
     }
@@ -162,7 +163,7 @@ bool Maze::explored(Node* target_node) {
 }
 
 void Maze::solve() {
-    Node* start_node = new Node{_start, Vector2{0, 0}, nullptr};
+    Node* start_node = new Node{_start, Vec2{0, 0}, nullptr};
 
     _frontier->add(start_node);
 
@@ -175,11 +176,11 @@ void Maze::solve() {
 
         node = _frontier->remove();
         _explored_nodes.push_back(node);        
-        if (equal_v2(node->position, _goal)) {
+        if (node->get_position() == _goal) {
             break;
         }
 
-        for (Vector2 action : actions(node)) {
+        for (Vec2 action : actions(node)) {
             Node* temp_node = result(node, action);
             if (!(_frontier->contains_state(temp_node)) && !explored(temp_node)) {
                 _frontier->add(temp_node);
@@ -187,17 +188,18 @@ void Maze::solve() {
                 _trash_nodes.push_back(temp_node);
             }
         }
-    }
 
-    while(node->parent != nullptr) {
-        _solution.insert(_solution.begin(), node->position);
-        node = node->parent;
+}
+
+    while(node->get_parent() != nullptr) {
+        _solution.insert(_solution.begin(), node->get_position());
+        node = node->get_parent();
     }
-    _solution.insert(_solution.begin(), node->position);
+    _solution.insert(_solution.begin(), node->get_position());
 }
 
 // Getters
-Vector2 Maze::get_vector2(char key) {
+Vec2 Maze::get_Vec2(char key) {
     switch (key) {
         case 's':
             return _start;

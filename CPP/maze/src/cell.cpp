@@ -1,6 +1,10 @@
 #include "cell.hpp"
 
-Cell::Cell(Rectangle& rectangle, Color& color, Vector2& position) 
+Cell::Cell() {
+    
+}
+
+Cell::Cell(Rectangle& rectangle, Color& color, Vec2& position) 
 : _rectangle(rectangle), _color(color), _position(position) {
 
 }
