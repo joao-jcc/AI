@@ -1,9 +1,21 @@
 #include "maze.hpp"
 
 // Constructor of the Maze class that takes the file path as an argument and calls the read_maze function to initialize the maze.
-Maze::Maze(std::string path) {
+Maze::Maze(std::string path, char frontier_key) {
     read_maze(path);
-    _frontier = new QueueFrontier();
+
+    switch(frontier_key) {
+        case 'q':
+            _frontier = new QueueFrontier();
+            break;
+        case 's':
+            _frontier = new StackFrontier();
+            break;
+        
+        default:
+            _frontier = new StackFrontier();
+    }
+
     _solution = std::vector<Vec2>();
     _explored_nodes = std::vector<Node*>();
     _trash_nodes = std::vector<Node*>();
@@ -11,6 +23,7 @@ Maze::Maze(std::string path) {
 
 // Destructor of the Maze class. It releases the memory of all the Node objects in the _explored_nodes vector.
 Maze::~Maze() {
+    std::cout << TERMINAL_BOLDRED << "Destruindo Maze!" << std::endl;
     for (Node* node : _explored_nodes) {
         delete node;
     }

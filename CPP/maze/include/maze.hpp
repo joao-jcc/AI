@@ -24,7 +24,7 @@ class Maze {
         std::vector<Node*> _trash_nodes;
     
     public:
-        Maze(std::string path);
+        Maze(std::string path, char frontier_key);
         ~Maze();
 
         // I/O functions

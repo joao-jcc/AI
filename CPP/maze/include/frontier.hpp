@@ -20,6 +20,8 @@ class Frontier {
             return _frontier;
         }
 
+        int size();
+
 };
 
 class StackFrontier : public Frontier {

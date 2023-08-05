@@ -12,8 +12,8 @@ std::string input_maze_4 = "text/maze4.txt";
 std::string input_maze_5 = "text/maze5.txt";
 
 TEST_CASE("01- Input Maze") {
-    Maze maze1(input_maze_1);
-    Maze maze2(input_maze_2);
+    Maze maze1(input_maze_1, 's');
+    Maze maze2(input_maze_2, 's');
 
     SUBCASE ("Start") {
         CHECK(maze1.get_Vec2('s') == Vec2(5, 0));
@@ -47,8 +47,8 @@ TEST_CASE("01- Input Maze") {
 }
 
 TEST_CASE ("02- Actions") {
-    Maze maze4(input_maze_4);
-    Maze maze5(input_maze_5);
+    Maze maze4(input_maze_4, 'q');
+    Maze maze5(input_maze_5,  'q');
 
     SUBCASE ("All moves available") {
         Node node(Vec2(1, 1));

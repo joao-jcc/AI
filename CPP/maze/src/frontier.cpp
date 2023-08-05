@@ -25,6 +25,10 @@ bool Frontier::empty() {
     return _frontier.empty();
 }
 
+int Frontier::size() {
+    return _frontier.size();
+}
+
 // STACK FRONTIER
 
 StackFrontier::StackFrontier() {

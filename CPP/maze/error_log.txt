@@ -3,3 +3,4 @@ status 2: fstream error
 status 3: theres is no solution to be written
 status 4: keyword error
 status 5: No Solution found for the maze
+status 6: Dimensional error
