@@ -1,0 +1,47 @@
+
+void Maze::report() {
+    std::string root = "reports/";
+    size_t pos = _input_maze.find_last_of(".");
+    std::string output_report = _input_maze.substr(0, pos) + "-report.png";
+    pos = _input_maze.find_first_of("/");
+    output_report = root + output_report.substr(pos + 1);
+
+    float screen_width = _dimension.get_y() * cell_size;
+    float screen_height = _dimension.get_x() * cell_size;
+
+    InitWindow(screen_width, screen_height, "Maze Report");
+
+    RenderTexture2D target = LoadRenderTexture(screen_width, screen_height);
+    _gen_cells();
+    _update_cells();
+    while (!WindowShouldClose()) {
+            // Drawing to the render texture
+            BeginTextureMode(target);
+
+            ClearBackground(BLACK);
+            _draw_cells();
+
+            EndTextureMode();
+
+            // Drawing to the screen
+            BeginDrawing();
+            ClearBackground(BLACK);
+
+            // Draw the texture to the screen
+            DrawTextureRec(target.texture, (Rectangle){ 0, 0, (float)target.texture.width, -(float)target.texture.height }, (Vector2){ 0, 0 }, WHITE);
+
+            EndDrawing();
+    }
+    // Capture screen data as an image
+    Image textureImage = LoadImageFromTexture(target.texture);
+    ImageFlipVertical(&textureImage);
+
+    // Save image as PNG
+    ExportImage(textureImage, output_report.c_str());
+
+    // Clean up
+    UnloadImage(textureImage);
+    CloseWindow();
+
+
+}

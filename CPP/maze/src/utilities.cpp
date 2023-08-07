@@ -22,6 +22,14 @@ void Vec2::print() {
     std::cout << TERMINAL_BOLDBLUE << "(" << _x << "," << _y << ")" << TERMINAL_RESET << std::endl;
 }
 
+float Vec2::min() {
+    return _x < _y ? _x : _y;
+}
+
+float Vec2::max() {
+    return _x > _y ? _x : _y;
+}
+
 // Node
 
 Node::Node(Vec2 position, Vec2 action, Node* parent)

@@ -1,0 +1,64 @@
+int Maze::_gen_code(Vec2 position) {
+    return position.get_x() * _dimension.get_y() + position.get_y();
+}
+
+void Maze::_gen_cells() {
+    for (int l=0; l < _dimension.get_x(); ++l) {
+        for (int c=0; c < _dimension.get_y(); ++c) {
+            Rectangle rec{c * cell_size, l * cell_size, cell_size, cell_size};
+            Vec2 position{(float) l, (float) c};
+            Color color;
+            if (_start.get_x() == l && _start.get_y() == c) {
+                color = start_color;
+            } else if (_goal.get_x() == l && _goal.get_y() == c) {
+                color = goal_color;
+            } else {
+                color = _walls[l][c] ? wall_color : free_color;
+            }
+
+            Cell cell(rec, color, position);
+            _cells[_gen_code(position)] = cell;
+        }
+    }
+}
+
+void Maze::_update_cells() {
+    if (_cells.size() == 0) {
+        std::cerr << "Cells not generated yet!" << std::endl;
+        return;
+    }
+
+    for (Node* node : _explored_nodes) {
+        Vec2 position = node->get_position();
+
+        if (position == _start || position == _goal) {
+            continue;
+        }
+
+        int code = _gen_code(node->get_position());
+        _cells.at(code).set_color(explored_color);
+    }
+
+    for (Node* node : _frontier->get_frontier()) {
+        Vec2 position = node->get_position();
+        if (position == _start || position == _goal) {
+            continue;
+        }
+        int code = _gen_code(position);
+        _cells.at(code).set_color(frontier_color);
+    }
+
+    for (Vec2 position : _solution) {
+        if (position == _start || position == _goal) {
+            continue;
+        }
+        int code = _gen_code(position);
+        _cells.at(code).set_color(solution_color);
+    }
+}
+
+void Maze::_draw_cells() {
+    for (std::pair<int, Cell> cell_p : _cells) {
+        cell_p.second.draw();
+    }
+}

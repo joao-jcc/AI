@@ -20,6 +20,9 @@ class Vec2 {
 
         bool operator==(const Vec2& other) const;
 
+        float min();
+        float max();
+
         float get_x() const {
             return _x;
         };   

@@ -1,29 +1,33 @@
 #include "maze.hpp"
 
-// Constructor of the Maze class that takes the file path as an argument and calls the read_maze function to initialize the maze.
-Maze::Maze(std::string path, char frontier_key) {
-    read_maze(path);
+// Default constructor
+Maze::Maze() {
+    _walls = std::vector< std::vector<bool> >() ;
+    _start = Vec2();
+    _goal = Vec2();
+    _dimension = Vec2();
 
-    switch(frontier_key) {
-        case 'q':
-            _frontier = new QueueFrontier();
-            break;
-        case 's':
-            _frontier = new StackFrontier();
-            break;
-        
-        default:
-            _frontier = new StackFrontier();
-    }
+    _node = nullptr;
+    _frontier = nullptr;
 
+    _input_maze = "";
+    
+    _solution_found = false;
     _solution = std::vector<Vec2>();
     _explored_nodes = std::vector<Node*>();
     _trash_nodes = std::vector<Node*>();
+
+}
+
+// Constructor with specified frontier/key and input_maze
+Maze::Maze(std::string input_maze, char key) : Maze() {
+    set_frontier(key);
+    read_maze(input_maze);
 }
 
 // Destructor of the Maze class. It releases the memory of all the Node objects in the _explored_nodes vector.
 Maze::~Maze() {
-    std::cout << TERMINAL_BOLDRED << "Destruindo Maze!" << std::endl;
+    std::cout << TERMINAL_BOLDRED << "Destroying Maze!" << std::endl;
     for (Node* node : _explored_nodes) {
         delete node;
     }
@@ -36,14 +40,22 @@ Maze::~Maze() {
 }
 
 // Function to read the maze from a file specified by the given path and initialize the internal maze representation.
-void Maze::read_maze(std::string path) {
-    std::ifstream file(path);
+// Fills _dimension, _goal, _start and _walls;
+void Maze::read_maze(std::string input_maze) {
+    if (_frontier == nullptr) {
+        std::cerr << "Frontier must be set before to read a maze!" << std::endl;
+        return;
+    }
+
+    std::ifstream file(input_maze);
 
     // Check if the file could be opened successfully.
     if (!file.is_open()) {
-        std::cerr << "Error opening file: " << path << std::endl;
-        exit(2); // Exit the program with an error code 2.
+        std::cerr << "Error opening file: " << input_maze << std::endl;
+        return;
     }
+
+    _input_maze = input_maze;
 
     // Clear the existing maze data.
     _walls.clear();
@@ -73,52 +85,58 @@ void Maze::read_maze(std::string path) {
         _walls.push_back(row); // Add the row to the maze representation.
         ++l; // Increment the line counter.
     }
-
+    
     _dimension = Vec2(l, c);
 
     file.close(); // Close the file after reading.
 }
 
+
 // Function to write the solution path into a file specified by the given path.
-void Maze::write_solution(std::string path) {
+void Maze::report() {
     if (_solution.empty()) {
-        std::cerr << "No solution to be written!" << std::endl;
-        exit(3); // Exit the program with an error code 3.
+        std::cerr << "No solution to be reported!" << std::endl;
+        return;
     }
 
-    std::ofstream file(path);
+    std::string path_report = _path_to_report();
+
+    std::ofstream file(path_report);
     // Check if the file could be opened successfully.
     if (!file.is_open()) {
-        std::cerr << "Error opening file: " << path << std::endl;
-        exit(2); // Exit the program with an error code 2.
+        std::cerr << "Error opening file: " << path_report << std::endl;
+        return; // Exit the program with an error code 2.
     }
 
     // Write path cost and number of explored nodes
-    file << "Explored Nodes: " << _explored_nodes.size() << std::endl;
+    file << "Search: " << _frontier->get_name() << std::endl;
     file << "Path Cost: " << _solution.size() - 1 << std::endl;
+    file << "Explored Nodes: " << _explored_nodes.size() << std::endl;
+
+    file << std::endl;
 
     // Create a maze representation with characters to be written into the file.
-    std::vector< std::vector<char> > maze(_dimension.get_x(), std::vector<char>(_dimension.get_y(), ' '));
+    std::vector< std::vector<std::string> > maze(_dimension.get_x(), std::vector<std::string>(_dimension.get_y(), " "));
 
     // Convert the maze data into characters for visualization.
     for (int l = 0; l < _dimension.get_x(); ++l) {
         for (int c = 0; c < _dimension.get_y(); ++c) {
-            maze[l][c] = _walls[l][c] ? '#' : ' ';
+            maze[l][c] = _walls[l][c] ? wall_unicode : free_unicode;
         }
     }
 
     for (Node* node: _explored_nodes) {
-        maze[node->get_position().get_x()][node->get_position().get_y()] = '-';
+        maze[node->get_position().get_x()][node->get_position().get_y()] = explored_unicode;
     }
 
     // Mark the solution path in the maze representation.
     for (Vec2 position : _solution) {
-        maze[position.get_x()][position.get_y()] = '*';
+        maze[position.get_x()][position.get_y()] = solution_unicode;
     }
 
     // Mark the start and goal positions in the maze representation.
-    maze[_start.get_x()][_start.get_y()] = (char)'A';
-    maze[_goal.get_x()][_goal.get_y()] = (char)'B';
+    maze[_start.get_x()][_start.get_y()] = "A";
+    maze[_goal.get_x()][_goal.get_y()] = "B";
     
     // Write the maze representation into the file.
     for (int l = 0; l < _dimension.get_x(); ++l) {
@@ -128,9 +146,31 @@ void Maze::write_solution(std::string path) {
         file << std::endl; // Add a new line after each row.
     }
 
+    file << std::endl;
+    file << "Solution:" << std::endl;
+
+
+    for (Vec2 position : _solution) {
+        file << "(" << std::setfill('0') << std::setw(2) << position.get_x() << ", " << std::setfill('0') << std::setw(2) << position.get_y() << ")" << std::endl;
+    }
+
 
     file.close(); // Close the file after writing.
 }
+
+
+std::string Maze::_path_to_report() {
+    std::string root = "reports/";
+    size_t pos = _input_maze.find_last_of(".");
+
+    std::string frontier_sufix = _frontier->get_name().substr(0, 2);
+    transform(frontier_sufix.begin(), frontier_sufix.end(), frontier_sufix.begin(), ::tolower);
+    std::string path = _input_maze.substr(0, pos) + frontier_sufix + "-report.txt";
+    pos = _input_maze.find_first_of("/");
+     
+    return root + path.substr(pos + 1);
+}
+
 
 std::vector<Vec2> Maze::actions(Node* node) {
     Vec2 position = node->get_position();
@@ -176,63 +216,66 @@ bool Maze::explored(Node* target_node) {
 }
 
 void Maze::solve() {
-    Node* start_node = new Node{_start, Vec2{0, 0}, nullptr};
-
+    Node* start_node = new Node{_start, Vec2(), nullptr};
     _frontier->add(start_node);
 
-    Node* node = new Node{};
-    while(true) {
-        if (_frontier->empty()) {
-            std::cerr << "No Solution!" << std::endl;
-            exit(5);
+    Node* node = new Node();
+    while(!_solution_found) {
+        _solve_step();
+    }
+
+    while(_node->get_parent() != nullptr) {
+        _solution.insert(_solution.begin(), _node->get_position());
+        _node = _node->get_parent();
+    }
+    _solution.insert(_solution.begin(), _node->get_position());
+}
+
+void Maze::_solve_step() {
+     if (_frontier->empty()) {
+            std::cerr << "No Solution found!" << std::endl;
+            return;
         }
 
-        node = _frontier->remove();
-        _explored_nodes.push_back(node);        
-        if (node->get_position() == _goal) {
-            break;
+        _node = _frontier->remove();
+        _explored_nodes.push_back(_node);
+  
+        if (_node->get_position() == _goal) {
+           _solution_found = true;
+           return;
         }
 
-        for (Vec2 action : actions(node)) {
-            Node* temp_node = result(node, action);
+        for (Vec2 action : actions(_node)) {
+            Node* temp_node = result(_node, action);
             if (!(_frontier->contains_state(temp_node)) && !explored(temp_node)) {
                 _frontier->add(temp_node);
             } else {
                 _trash_nodes.push_back(temp_node);
             }
         }
-
 }
 
-    while(node->get_parent() != nullptr) {
-        _solution.insert(_solution.begin(), node->get_position());
-        node = node->get_parent();
-    }
-    _solution.insert(_solution.begin(), node->get_position());
-}
+void Maze::set_frontier(char key) {
+    if (_frontier == nullptr) {
+        delete _frontier;
+    } 
 
-// Getters
-Vec2 Maze::get_Vec2(char key) {
     switch (key) {
         case 's':
-            return _start;
+            _frontier = new StackFrontier();
+            _frontier->set_name("Stack Frontier");
             break;
         
-        case 'g':
-            return _goal;
+        case 'q':
+            _frontier = new QueueFrontier();
+            _frontier->set_name("Queue Frontier");
             break;
         
-        case 'd':
-            return _dimension;
-            break;
-
         default:
-            std::cerr << "Invalid Keyword!" << std::endl;
-            exit(4);
-
+            std::cerr << ("Available keys: s, q") << std::endl;
+            break;
     }
+
 }
 
-std::vector< std::vector<bool> > Maze::get_walls() {
-    return _walls;
-};
+

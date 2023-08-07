@@ -16,23 +16,23 @@ TEST_CASE("01- Input Maze") {
     Maze maze2(input_maze_2, 's');
 
     SUBCASE ("Start") {
-        CHECK(maze1.get_Vec2('s') == Vec2(5, 0));
-        CHECK(maze2.get_Vec2('s') == Vec2(15, 0));
+        CHECK(maze1.get_start() == Vec2(5, 0));
+        CHECK(maze2.get_start() == Vec2(15, 0));
     }
 
     SUBCASE ("Goal") {
-        CHECK(maze1.get_Vec2('g') == Vec2(0, 5));
-        CHECK(maze2.get_Vec2('g') == Vec2(8, 13));
+        CHECK(maze1.get_goal() == Vec2(0, 5));
+        CHECK(maze2.get_goal() == Vec2(8, 13));
     }
     
     SUBCASE ("Dimension") {
-        CHECK(maze1.get_Vec2('d') == Vec2(6, 7));
-        CHECK(maze2.get_Vec2('d') == Vec2(16, 29));
+        CHECK(maze1.get_dimension() == Vec2(6, 7));
+        CHECK(maze2.get_dimension() == Vec2(16, 29));
     }
 
     SUBCASE ("Counting the number of walls") {
         std::vector<std::vector<bool>> walls = maze1.get_walls();
-        Vec2 dimension = maze1.get_Vec2('d');
+        Vec2 dimension = maze1.get_dimension();
         
         unsigned counting = 0;
         for (int l = 0; l < dimension.get_x(); ++l) {
@@ -44,6 +44,7 @@ TEST_CASE("01- Input Maze") {
         unsigned empty_spaces = 11;
         CHECK_EQ(counting, dimension.get_x() * dimension.get_y() - empty_spaces);
     }
+
 }
 
 TEST_CASE ("02- Actions") {
@@ -96,6 +97,7 @@ TEST_CASE ("02- Actions") {
         CHECK_EQ(actions.size(), 1);
         CHECK(Vec2(-1, 0) == actions.at(0));
     }
+
 }
 
 
