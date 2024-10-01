@@ -1,5 +1,5 @@
-# CS50-AI
-Repositório que armazena pequenos programas desenvolvidos durante o curso CS50's Introduction to Artificial Intelligence [Harvard]
+# AI
+Repositório que armazena pequenos programas dotados de simples algoritmos inteligentes.
 
 ## Outputs :
 > <br>
