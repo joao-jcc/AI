@@ -1,5 +1,5 @@
 # AI
-Repositório que armazena pequenos programas dotados de simples algoritmos inteligentes.
+Introdução a Inteligência Artificial. Pequenos Programas.
 
 ## Outputs :
 > <br>
